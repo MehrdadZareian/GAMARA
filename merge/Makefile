@@ -11,7 +11,6 @@ PyFlags			= -fPIC `/usr/bin/python3-config --cflags` `/usr/bin/python3-config --
 #
 SCOTSROOT		= ../..
 SCOTSINC		= -I$(SCOTSROOT)/src
-DYNINC		= -I$(SCOTSROOT)/dynamics
 
 .PHONY: Unicycle 
 
@@ -20,7 +19,7 @@ TARGET = Unicycle
 all: $(TARGET)
 
 Unicycle: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  merge.cpp -o unicycle 
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  merge.cpp -o unicycle 
 
 clean:
 	rm unicycle
