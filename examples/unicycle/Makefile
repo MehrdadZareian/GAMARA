@@ -20,7 +20,7 @@ TARGET = Unicycle
 all: $(TARGET)
 
 Unicycle: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  merge.cpp -o unicycle 
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  simulation.cpp -o unicycle 
 
 clean:
 	rm unicycle

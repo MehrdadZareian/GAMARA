@@ -19,6 +19,8 @@
 #include <sys/resource.h>
 #include "merge.hh"
 
+#define SIMULATION false
+
 
 #define pi 3.14
 
@@ -60,7 +62,7 @@ std::vector<state_type> trajectory_simulation(state_type initial_trajectory_stat
         for (int k = 0; k < 6; ++k) {
             inFile >> u_temp[k][0] >>u_temp[k][1];
         }
-      inputs[i]=u_temp[4];
+        inputs[i]=u_temp[4];
     }
 
     state_type temp_state;
@@ -128,7 +130,7 @@ int main(){
     //    initial_trajectory_state={{6,5.4,-0.64,0}};//5
     //    initial_trajectory_state={{4.0,6.9,-0.64,0}};//6
 
-        /*vector that contains all of states of nominal trajectory*/
+    /*vector that contains all of states of nominal trajectory*/
 
 
     /* reading nominal controller from a file and simulating   */
@@ -138,10 +140,10 @@ int main(){
     /*Target set lower left and upper right*/
     state_type target_left;
     state_type target_right;
-   
+
     /*specifying target set with lower left and upper right point (last point of trajectory +- radius */
     for (int i = 0; i < state_dim; ++i) {
-     double target_radius;
+        double target_radius;
         if(i!=state_dim-1)
             target_radius=parameters.epsilon_num[i]*parameters.s_eta[i];
         else
@@ -184,12 +186,12 @@ int main(){
 
 
     std::cout << "Computing the transition function: " << std::endl;
-     /* transition function of symbolic model */
+    /* transition function of symbolic model */
     
 
     /* Computing abstraction */
     tt.tic();
-     abs.compute_gb2_temp(tf,ode_post, radius_post,inside_of_area,LtoG,GtoL);
+    abs.compute_gb2_temp(tf,ode_post, radius_post,inside_of_area,LtoG,GtoL);
     tt.toc();
 
 
@@ -221,55 +223,56 @@ int main(){
     if(write_to_file(scots::StaticController(ss,is,std::move(win)),"controller"))
         std::cout << "Done. \n";
 
+    if(SIMULATION){
 
-    scots::StaticController con;
-      if(!read_from_file(con,"controller")) {
-        std::cout << "Could not read controller from controller.scs\n";
-        return 0;
-      }
-      //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      auto target_state = [&ss,&nominal_trajectory_states,&target_left,&target_right](const state_type& x) {
+        scots::StaticController con;
+        if(!read_from_file(con,"controller")) {
+            std::cout << "Could not read controller from controller.scs\n";
+            return 0;
+        }
+        //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+        auto target_state = [&ss,&nominal_trajectory_states,&target_left,&target_right](const state_type& x) {
 
-          if(check_inside(target_left,target_right,x))
-              return true;
+            if(check_inside(target_left,target_right,x))
+                return true;
 
-          return false;
+            return false;
         };
 
-      std::cout << "\nSimulation:\n " << std::endl;
+        std::cout << "\nSimulation:\n " << std::endl;
 
-    /* This part is used to see how many points of trajectory included in control domain
+        /* This part is used to see how many points of trajectory included in control domain
     for(int i=0;i<trajectory_size;i++)
          std::cout<<"check "<<i<<"- "<<con.check<state_type,input_type>(nominal_trajectory_states[i],GtoL,inside_of_area)<<std::endl;
     */
 
 
-    state_type x=initial_trajectory_state;
-    std::vector<state_type> syn_nominal_trajectory_states;
-    syn_nominal_trajectory_states.push_back(x);
+        state_type x=initial_trajectory_state;
+        std::vector<state_type> syn_trajectory_states;
+        syn_trajectory_states.push_back(x);
 
-    std::cout<<"Closed loop from an specified initial point and disturbance"<<std::endl;
+        std::cout<<"Closed loop from an specified initial point and disturbance"<<std::endl;
 
-    while(1) {
-      /*checking whether states is inside control domain or not*/
-      if(!con.check<state_type,input_type>(x,GtoL,inside_of_area)){
-          std::cout<<"This state is not inside of control domain"<<std::endl;
-          break;
-      }
+        while(1) {
+            /*checking whether states is inside control domain or not*/
+            if(!con.check<state_type,input_type>(x,GtoL,inside_of_area)){
+                std::cout<<"This state is not inside of control domain"<<std::endl;
+                break;
+            }
 
-      std::vector<input_type> u = con.get_controller<state_type,input_type>(x,GtoL,inside_of_area);
-      std::cout << x[0] <<  " "  << x[1] <<"\n";
-      ode_post_dist (x,u[0]);
+            std::vector<input_type> u = con.get_controller<state_type,input_type>(x,GtoL,inside_of_area);
+            std::cout << x[0] <<  " "  << x[1] <<"\n";
+            ode_post_dist (x,u[0]);
 
-      syn_nominal_trajectory_states.push_back(x);
+            syn_trajectory_states.push_back(x);
 
-      if(target_state(x) ) {
-        std::cout << "Arrived: " << x[0] <<  " "  << x[1] << std::endl;
-        break;
-      }
+            if(target_state(x) ) {
+                std::cout << "Arrived: " << x[0] <<  " "  << x[1] << std::endl;
+                break;
+            }
+        }
+
     }
-
-
 
 
     return 1;

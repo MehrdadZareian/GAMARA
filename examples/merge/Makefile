@@ -5,21 +5,23 @@ CC        = g++
 #CC       	  = clang++
 CXXFLAGS 		= -Wall -Wextra -std=c++11 -O3 -DNDEBUG -fopenmp
 CXXDEBUG		= -g -Wall -Wextra -std=c++11 
-PyFlags			= -fPIC `/usr/bin/python3-config --cflags` `/usr/bin/python3-config --ldflags`
+
 #	
 # scots 
 #
 SCOTSROOT		= ../..
 SCOTSINC		= -I$(SCOTSROOT)/src
+DYNINC		= -I$(SCOTSROOT)/dynamics
 
-.PHONY: Unicycle 
+.PHONY: Merge simulation 
 
-TARGET = Unicycle 
+TARGET = Merge simulation 
 
 all: $(TARGET)
 
-Unicycle: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC)  unicycle2.cpp -o unicycle 
-
+Merge: 
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  merge.cpp -o merge 
+simulation:
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  simulation.cpp -o simulate
 clean:
 	rm unicycle
