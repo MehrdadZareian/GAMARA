@@ -3,11 +3,10 @@
 #define verbose true
 #define pi 3.14
 
-
 /* state space dim */
-const int state_dim=5;
+const int state_dim=4;
 /* input space dim */
-const int input_dim=1;
+const int input_dim=2;
 /*
  * data types for the state space elements and input space
  * elements used in uniform grid and ode solvers
@@ -22,41 +21,48 @@ using abs_type = scots::abs_type;
 class Parameters {
   public:
 
-    const char* address="/home/mehrdad/Final_Project/examples/formation/tr_U.txt";
+    const char* address="/home/mehrdad/Final_Project/examples/multiDrone/tr_U.txt";
 
     /* lower bounds of the hyper rectangle */
-state_type s_lb={{-2,-2,-0.6,-0.1}};
+state_type s_lb={{-1,-1,-2,-0.1}};
     /* upper bounds of the hyper rectangle */
-state_type s_ub={{17,17,1.6,10}};
+state_type s_ub={{11,11,3.3,11}};
     /* grid node distance diameter */
-state_type s_eta={{0.04,0.04,0.02,0.08,0.1}};
+state_type s_eta={{0.02,0.02,0.02,0.1}};
 
     /* lower bounds of the hyper rectangle */
-input_type i_lb={-7};
+input_type i_lb={{-2.5,-2.5}};
     /* upper bounds of the hyper rectangle */
-input_type i_ub={7};
+input_type i_ub={{2.5,2.5}};
     /* grid node distance diameter */
-input_type i_eta={{0.2}};
+input_type i_eta={{0.3,0.3}};
 
     /*Disturbance vector(for each state)*/
-state_type w={{0,0.05,0,0,0}};
+state_type w={{0,-0.025,-0.025}};
 
     /*sampling time*/
     const double tau =0.1;
 
     /*number of samples in nominal trajectory (trajectory is discrete time)*/
-    int trajectory_size=70;
+    int trajectory_size=103;
     /* tube size is equal to number of boxes times */
 
-    state_type epsilon_num={8,10,10,11,0};
+    state_type epsilon_num={7,7,8,0};
 
-    const int state_dim=5;
-    const int input_dim=1;
-
-    const int trajectory_num=1;
-    const int agent_num=1;
-    std::vector<state_type> initial_trajectory_states{ {{0,0,pi,0,0}}   //1
-
+    const int state_dim=4;
+    const int input_dim=2;
+    const int trajectory_num=9; //Caution : starts from zero
+    const int agent_num=10;
+    std::vector<state_type> initial_trajectory_states{ {{0.0,2.0,0,0}}, //1
+                                                       {{0.0,4.0,0,0}}, //2
+                                                       {{0.0,6.0,0,0}}, //3
+                                                       {{0.0,8.0,0,0}}, //4
+                                                       {{2.0,0.0,pi/2,0}}, //5
+                                                       {{4.0,0.0,pi/2,0}}, //6
+                                                       {{6.0,0.0,pi/2,0}}, //7
+                                                       {{8.0,0.0,pi/2,0}}, //8
+                                                       {{0.0,0.0,pi/4,0}}, //9
+                                                       {{0.0,10.0,-pi/4,0}} //10
                                                      };
 
 } parameters;
@@ -70,13 +76,12 @@ inline auto radius_post = [](state_type &r, const state_type &, const input_type
     //without disturbance
     static state_type w=parameters.w;
     static double tau=parameters.tau;
-    r[0] = r[0] + 0.15*r[1]+ 0.027*r[2]+0.0063*r[3]+0.15*w[0]+0.011*w[1]+0.0012*w[2];
-    r[1] = r[1] + 0.41*r[2]+0.098*r[3]+0.15*w[1]+0.025*w[2]+0.005*w[3];
-    r[2] = 1.20*r[2] + 0.15*r[3]+w[2]*0.16+0.011*w[3] ;
-    r[3]= 2.75 *r[2]+ 1.15*r[3]+0.21*w[2]+0.15*w[3];
-    r[4]=0;
+    r[0] = r[0] + ((r[2]+std::abs(w[2]))*std::abs(u[0]) + std::abs(w[0])) * tau;
+    r[1] = r[1] + ((r[2]+std::abs(w[2]))*std::abs(u[0]) + std::abs(w[1])) * tau;
+    r[2] = r[2] + std::abs(w[2]) * tau;
+    r[3]=0;
 };
-//std::abs(
+
 
 
 
@@ -90,28 +95,14 @@ inline auto  ode_post = [](state_type &x, const input_type &u) {
 
     auto rhs =[](state_type& xx,  const state_type &x, const input_type &u) { // state space model
 
-        double g = 9.8;
-        double M_c=1.0;
-        double M_p=0.1;
-        double M_t=M_p+M_c;
-        double l=0.5;
-        double c1 = u[0]/M_t;
-        double c2 = M_p*l/M_t;
-        double c3=l*4.0/3.0;
-        double c4=l*M_p/M_t;
-
-        double F=(g*std::sin(x[2])-std::cos(x[2])*(c1+c2*x[3]*x[3]*std::sin(x[2])))/(c3-c4*std::cos(x[2])*std::cos(x[2]));
-        double G= (c1+c2*x[3]*x[3]*std::sin(x[2])) - c4* std::cos(x[2])*F;
-
-        xx[0] =x[1];
-        xx[1] =G;
-        xx[2] =x[3];
-        xx[3] =F;
-        xx[4]=1;
+        xx[0] = u[0]*std::cos(x[2]);
+        xx[1] = u[0]*std::sin(x[2]);
+        xx[2] = u[1];
+        xx[3] = 1;
 
     };
     /* simulate (use 10 intermediate steps in the ode solver) */
-    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,1);
+    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,10);
 
 };
 
@@ -120,24 +111,11 @@ auto  ode_post_dist = [](state_type &x, const input_type &u) {
     /* the ode describing the vehicle */
     double tau=parameters.tau;
     auto rhs =[](state_type& xx,  const state_type &x, const input_type &u) { // state space model
-        double g = 9.8;
-        double M_c=1.0;
-        double M_p=0.1;
-        double M_t=M_p+M_c;
-        double l=0.5;
-        double c1 = u[0]/M_t;
-        double c2 = M_p*l/M_t;
-        double c3=l*4.0/3.0;
-        double c4=l*M_p/M_t;
-
-        double F=(g*std::sin(x[2])-std::cos(x[2])*(c1+c2*x[3]*x[3]*std::sin(x[2])))/(c3-c4*std::cos(x[2])*std::cos(x[2]));
-        double G= (c1+c2*x[3]*x[3]*std::sin(x[2])) - c4* std::cos(x[2])*F;
-
-        xx[0] =x[1]+w[0];
-        xx[1] =G+w[1];
-        xx[2] =x[3]+w[2];
-        xx[3] =F+w[3];
-        xx[4]=1;
+        state_type w=parameters.w;
+        xx[0] = u[0]*std::cos(x[2])+w[0];
+        xx[1] = u[0]*std::sin(x[2])+w[1];
+        xx[2] = u[1]+w[2];
+        xx[3] = 1;
 
     };
     /* simulate (use 10 intermediate steps in the ode solver) */

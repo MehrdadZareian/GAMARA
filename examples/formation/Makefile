@@ -13,15 +13,15 @@ SCOTSROOT		= ../..
 SCOTSINC		= -I$(SCOTSROOT)/src
 DYNINC		= -I$(SCOTSROOT)/dynamics
 
-.PHONY: Merge simulation 
+.PHONY: Formation simulation 
 
-TARGET = Merge simulation 
+TARGET = Formation simulation 
 
 all: $(TARGET)
 
-Merge: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  merge.cpp -o merge 
+Formation: 
+	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  formation.cpp -o formation 
 simulation:
 	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  simulation.cpp -o simulate
 clean:
-	rm merge
+	rm formation
