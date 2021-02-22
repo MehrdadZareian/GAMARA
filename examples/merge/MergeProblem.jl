@@ -50,11 +50,6 @@ xf = [
 
 goal = goal_constraint(xf);
 
-#LQR Cost Matrices (same as default)
-Q = 0.01*Diagonal(I,n)
-Qf = 1000.0*Diagonal(I,n)
-R = 0.01*Diagonal(I,m)
-
 #these 2 parameters are very important
 #number of points in trajectory(number of time samples)
 N = 110
@@ -63,9 +58,14 @@ dt = 0.1
 #total time
 tf = (N-1)*dt
 
-
-
+#LQR Cost Matrices (same as default)
+Q = 0.01*Diagonal(I,n)
+Qf = 1000.0*Diagonal(I,n)
+R = 0.01*Diagonal(I,m)
 obj = LQRObjective(Q,R,Qf,xf,N)
+
+
+
 #defining Constraint for each point in time
 constraints = Constraints(N)
 
