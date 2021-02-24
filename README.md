@@ -1,10 +1,10 @@
 # RobScots
 
-Temporary version!!!
+Temporary version of readme!!!
 
 # Requirements
-Julia >1.3
-c++11
+* Julia >1.3
+* c++11
 
 ## steps for execution
 1. Run Altro code 
