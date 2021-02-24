@@ -1,8 +1,9 @@
-# TrajectoryOptimization
+Here we used old version of TrajectoryOptimization library. You can find updated version here:
+https://github.com/RoboticExplorationLab/TrajectoryOptimization.jl
 
-![Build Status](https://travis-ci.org/RoboticExplorationLab/TrajectoryOptimization.jl.svg?branch=master)
-[![codecov](https://codecov.io/gh/RoboticExplorationLab/TrajectoryOptimization.jl/branch/master/graph/badge.svg)](https://codecov.io/gh/RoboticExplorationLab/TrajectoryOptimization.jl)
-[![](https://img.shields.io/badge/docs-dev-blue.svg)](https://RoboticExplorationLab.github.io/TrajectoryOptimization.jl/dev)
+
+
+# TrajectoryOptimization
 
 A library of solvers for trajectory optimization problems written in Julia. Currently, the following methods are implemented with a common interface:
 
@@ -13,16 +14,7 @@ A library of solvers for trajectory optimization problems written in Julia. Curr
   * Square-root methods for improved numerical conditioning
   * Active-set projection method for solution polishing
 
-Direct Collocation (DIRCOL)
-  * Interfaces to Nonlinear Programming solvers (e.g., [Ipopt](https://github.com/coin-or/Ipopt), [SNOPT](https://ccom.ucsd.edu/~optimizers/solvers/snopt/)) via [MathOptInterface](https://github.com/JuliaOpt/MathOptInterface.jl)
 
-All methods utilize Julia's extensive autodifferentiation capabilities via [ForwardDiff.jl](http://www.juliadiff.org/ForwardDiff.jl/) so that the user does not need to specify derivatives of dynamics, cost, or constraint functions. Dynamics can be computed directly from a URDF file via [RigidBodyDynamics.jl](https://github.com/JuliaRobotics/RigidBodyDynamics.jl).
-
-## Installation
-To install TrajectoryOptimization.jl, run the following from the Julia REPL:
-```julia
-Pkg.add("TrajectoryOptimization")
-```
 
 ## Quick Start
 To run a simple example of a constrained 1D block move:
@@ -66,9 +58,3 @@ initial_controls!(prob,U0) # initialize problem with controls
 
 solver = solve!(prob, ALTROSolverOptions{Float64}())
 ```
-
-## Examples
-Notebooks with more detailed examples can be found [here](https://github.com/RoboticExplorationLab/TrajectoryOptimization.jl/tree/master/examples), including all the examples from our [IROS 2019 paper](https://github.com/RoboticExplorationLab/TrajectoryOptimization.jl/tree/master/examples/IROS_2019).
-
-## Documentation
-Detailed documentation for getting started with the package can be found [here](https://roboticexplorationlab.github.io/TrajectoryOptimization.jl/dev/).
