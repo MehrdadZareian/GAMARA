@@ -106,7 +106,7 @@ int main(){
     /*this array stores whether a point is inside of tube or not*/
     bool* inside_of_area= new bool[N];
     /*mapping from global index to local index*/
-    abs_type* GtoL=new abs_type[N];
+    unsigned int* GtoL=new unsigned int[N];
     /*mapping from local index to global index*/
     std::vector<abs_type>  LtoG;
 

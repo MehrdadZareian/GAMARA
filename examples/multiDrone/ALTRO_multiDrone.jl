@@ -224,7 +224,7 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 	plot!((x[10][1],z[10][1]),marker=:circle,color=:red,label="")
     plot!((x[10][end],z[10][end]),marker=:utriangle,color=:green,label="")
 
-	io = open("/home/mehrdad/work/nom_tr.txt", "w")
+	io = open("nom_tr.txt", "w")
 	for i in prob.U
 		for k=1:n-1
     		print(io,i[k])

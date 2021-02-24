@@ -95,7 +95,7 @@ public:
 
 
   template<class state_type, class input_type>
-  std::vector<input_type> get_controller(const state_type &x, abs_type* XTOI,bool* inside_area) const {
+  std::vector<input_type> get_controller(const state_type &x, unsigned int* XTOI,bool* inside_area) const {
     /* abstract state index */
     if(inside_area[m_state_grid.xtoi(x)]==0)
         std::cout<<"something is wrong"<<std::endl;
@@ -125,7 +125,7 @@ public:
 
 
   template<class state_type, class input_type>
-  bool check(const state_type &x,abs_type* XTOI,bool* inside_area) const {
+  bool check(const state_type &x,unsigned int* XTOI,bool* inside_area) const {
       if(inside_area[m_state_grid.xtoi(x)]==0)
           std::cout<<"something is wrong"<<std::endl;
       abs_type i = XTOI[m_state_grid.xtoi(x)];

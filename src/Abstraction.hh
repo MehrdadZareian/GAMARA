@@ -148,7 +148,7 @@ public:
                ,state_type target_left,state_type target_right
                ,bool* inside_of_area
                ,std::vector<abs_type>& LtoG
-               ,abs_type* GtoL){
+               ,unsigned int* GtoL){
 
       int dim=parameters.state_dim;
       abs_type index=0;
@@ -573,7 +573,7 @@ public:
                   //F3& avoid,//=params::avoid_abs,
                    bool* inside_of_area,
                    std::vector<abs_type>& LtoG,
-                   abs_type* GtoL
+                   unsigned int* GtoL
                    ){ //__________________________1
     /* number of cells */
     abs_type N=LtoG.size()+1; //__________________________2
@@ -855,7 +855,7 @@ public:
                   F2& radius_post,
                    bool* inside_of_area,
                    std::vector<abs_type>& LtoG,
-                   abs_type* GtoL
+                   unsigned int* GtoL
                    ){ //__________________________1
     /* number of cells */
     abs_type N=LtoG.size()+1; //__________________________2

@@ -48,7 +48,7 @@ state_type w={{0,-0.03,-0.03}};
     int trajectory_size=110;
     /* tube size is equal to number of boxes times */
 
-    state_type epsilon_num={8,8,8,0};
+    state_type epsilon_num={7,7,7,0};
 
     const int state_dim=4;
     const int input_dim=2;
