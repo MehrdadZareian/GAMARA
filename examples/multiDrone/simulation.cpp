@@ -17,7 +17,7 @@
 /* memory profiling */
 #include <ctime>
 #include <sys/resource.h>
-#include "formation.hh"
+#include "multiDrone.hh"
 
 
 #define pi 3.14

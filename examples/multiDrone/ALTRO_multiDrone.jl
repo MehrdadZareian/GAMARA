@@ -226,10 +226,10 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 
 	io = open("nom_tr.txt", "w")
 	for i in prob.U
-		for k=1:n-1
+		for k=1:m-1
     		print(io,i[k])
     		print(io," ")
 		end
-    	println(io,i[n])
+    	println(io,i[m])
 	end
 	close(io)
