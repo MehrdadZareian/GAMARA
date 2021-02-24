@@ -22,14 +22,14 @@ using abs_type = scots::abs_type;
 class Parameters {
   public:
 
-    const char* address="/home/mehrdad/Final_Project/examples/formation/tr_U.txt";
+    const char* address="nom_tr.txt";
 
     /* lower bounds of the hyper rectangle */
-state_type s_lb={{-2,-2,-0.6,-0.1}};
+state_type s_lb={{-2,-2,-0.6,0}};
     /* upper bounds of the hyper rectangle */
-state_type s_ub={{17,17,1.6,10}};
+state_type s_ub={{17,17,1.7,10.9}};
     /* grid node distance diameter */
-state_type s_eta={{0.02,0.02,0.02,0.1}};
+state_type s_eta={{0.03,0.03,0.03,0.1}};
 
     /* lower bounds of the hyper rectangle */
 input_type i_lb={{-1,-3}};
@@ -52,7 +52,7 @@ state_type w={{0,-0.03,-0.03}};
 
     const int state_dim=4;
     const int input_dim=2;
-    const int trajectory_num=4;
+    const int trajectory_num=3;
     const int agent_num=5;
     std::vector<state_type> initial_trajectory_states{ {{0,0,pi/4,0}},   //1
                                                        {{0,1.5,pi/4,0}}, //2

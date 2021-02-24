@@ -21,12 +21,12 @@ using abs_type = scots::abs_type;
 class Parameters {
   public:
 
-    const char* address="/home/mehrdad/Scots+Altro2/examples/merge/tr_U.txt";
+    const char* address="nom_tr.txt";
 
     /* lower bounds of the hyper rectangle */
-state_type s_lb={{5.5,1.4,-1,-0.1}};
+state_type s_lb={{-0.5,0.4,-1,-0.1}};
     /* upper bounds of the hyper rectangle */
-state_type s_ub={{15.5,6,0.4,5}};
+state_type s_ub={{15.5,7.1,0.4,7.5}};
     /* grid node distance diameter */
 state_type s_eta={{0.02,0.02,0.02,0.1}};
 
@@ -51,16 +51,16 @@ state_type w={{-0.03,-0.03,-0.03}};
 
     const int state_dim=4;
     const int input_dim=2;
-    const int trajectory_num=4;
-    const int agent_num=6;
-    std::vector<state_type> initial_trajectory_states{ {{6.0,1.2,0,0}}, //1
-                                                       {{3.0,1.2,0,0}}, //2
-                                                       {{0.0,1.2,0,0}}, //3
-                                                       {{8,3.9,-0.64,0}}, //4
-                                                       {{6,5.4,-0.64,0}}, //5
-                                                       {{4.0,6.9,-0.64,0}} //6
-                                                     };
 
+    const int trajectory_num=5;  //starts from 0
+    const int agent_num=6;
+    std::vector<state_type> initial_trajectory_states{ {{6.0,1.2,0,0}}, //0
+                                                       {{3.0,1.2,0,0}}, //1
+                                                       {{0.0,1.2,0,0}}, //2
+                                                       {{8,3.9,-0.64,0}}, //3
+                                                       {{6,5.4,-0.64,0}}, //4
+                                                       {{4.0,6.9,-0.64,0}} //5
+                                                     };
 } parameters;
 
 

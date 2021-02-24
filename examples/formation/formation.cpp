@@ -46,62 +46,6 @@ bool check_inside(state_type left,state_type right, state_type point ){
 
 /* In this function we read control inputs from a file and simulate the trajectroy using inputs + ODE */
 
-std::vector<state_type> trajectory_simulation(state_type initial_trajectory_state ){
-    std::vector<state_type> nominal_trajectory_states;
-
-    int trajectory_size=parameters.trajectory_size;
-
-    std::ifstream inFile;
-    inFile.open(parameters.address);
-
-
-    std::vector<input_type> u_temp(6);
-    std::vector<input_type> inputs(trajectory_size);
-
-    for ( int i = 0; i <trajectory_size ; i++) {
-        for (int k = 0; k < 6; ++k) {
-            inFile >> u_temp[k][0] >>u_temp[k][1];
-        }
-        inputs[i]=u_temp[4];
-    }
-
-    state_type temp_state;
-    nominal_trajectory_states.push_back(initial_trajectory_state);
-    temp_state=initial_trajectory_state;
-    state_type min_x=initial_trajectory_state;
-    state_type max_x=initial_trajectory_state;
-
-
-    for ( int i = 0; i <trajectory_size-1 ; i++)
-    {
-        ode_post (temp_state,inputs[i]);
-        if(temp_state[0]>15){
-            trajectory_size=i+1;
-            parameters.trajectory_size=i+1;
-            break;
-        }
-
-        for (int i = 0; i < state_dim; ++i) {
-            if(min_x[i]>temp_state[i])
-                min_x[i]=temp_state[i];
-            if(max_x[i]<temp_state[i])
-                max_x[i]=temp_state[i];
-        }
-
-        nominal_trajectory_states.push_back(temp_state);
-        if(verbose)
-            std::cout<< i+2<<"- " << nominal_trajectory_states[i+1][0]<< "  " <<nominal_trajectory_states[i+1][1]<<"  " <<nominal_trajectory_states[i+1][2]<<"  " << std::endl;
-    }
-    if(verbose)
-        for (int i = 0; i < state_dim; ++i)
-            std::cout<<i<<" min:"<<min_x[i]<<" max:"<<max_x[i]<<std::endl;
-
-    return nominal_trajectory_states;
-
-}
-
-
-
 
 
 
@@ -122,13 +66,6 @@ int main(){
     state_type initial_trajectory_state=parameters.initial_trajectory_states[parameters.trajectory_num];
     //__________________________________________________________________________________________________
 
-    /*initial point for trajectory*/
-    //     initial_trajectory_state={{6.0,1.2,0,0}};//1
-    //    initial_trajectory_state={{3.0,1.2,0,0}};//2
-    //    initial_trajectory_state={{0.0,1.2,0,0}};//3
-    //   initial_trajectory_state={{8,3.9,-0.64,0}};//4
-    //    initial_trajectory_state={{6,5.4,-0.64,0}};//5
-    //    initial_trajectory_state={{4.0,6.9,-0.64,0}};//6
 
     /*vector that contains all of states of nominal trajectory*/
 
@@ -187,7 +124,7 @@ int main(){
 
     std::cout << "Computing the transition function: " << std::endl;
     /* transition function of symbolic model */
-    
+
 
     /* Computing abstraction */
     tt.tic();

@@ -17,7 +17,7 @@
 /* memory profiling */
 #include <ctime>
 #include <sys/resource.h>
-#include "merge.hh"
+#include "formation.hh"
 
 
 #define pi 3.14

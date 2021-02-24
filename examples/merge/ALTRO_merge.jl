@@ -206,7 +206,7 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 
 #writing the solutions
 
-	io = open("tr_U.txt", "w")
+	io = open("nom_tr.txt", "w")
     for i in prob.U
 		for k=1:m-1
         	print(io,i[k])
