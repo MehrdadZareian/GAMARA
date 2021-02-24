@@ -4,24 +4,7 @@ using Plots, LinearAlgebra
 
 
 
-#=
-io_read = open("/home/mehrdad/Scots+Altro/examples/unicycle1D/T_uni.txt", "r")
-aa=readlines(io_read)
-FF=map(x->parse(Float32,x),aa)
-io_read2 = open("/home/mehrdad/Scots+Altro/examples/cart_pole_MA/T_cp.txt", "r")
-aa2=readlines(io_read2)
-FF2=map(x2->parse(Float32,x2),aa2)
-
-io_read3 = open("/home/mehrdad/Scots+Altro/examples/cart_pole_MA/T_cpc.txt", "r")
-aa3=readlines(io_read3)
-FF3=map(x3->parse(Float64,x3),aa3)
-
-io_read4 = open("/home/mehrdad/Scots+Altro/examples/unicycle1D/T_uniC.txt", "r")
-aa4=readlines(io_read4)
-FF4=map(x4->parse(Float64,x4),aa4)
-=#
-
-
+#number individual systems
 function cart_pole!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
     g = 9.8;
     M_c=1.0;
@@ -44,38 +27,33 @@ function cart_pole!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVecto
 
 	ẋ[5]=x[6];
 	ẋ[6]=u[2];
-
-
 end
-
+#total number of states
 n=6
+#total number of control inputs
 m=2
 
+#defining descrete model
 model = Model(cart_pole!,n,m)
-
-
-#model = Dynamics.cartpole_urdf
 model_d = rk4(model)
 n = model.n;
 m = model.m;
 
 T = Float64;
 
+#inital point for product system
 x0 = [0.0;0.0;pi;0.0;8.0;0.0]
+#Total number of control inputs
 xf = [5.0;0.0;pi;0.0;4.0;0.0]
+
+N = 70
+dt = 0.1
+tf = (N-1)*dt
+
 
 Q = 0.01*Diagonal(I,n)
 Qf = 1000.0*Diagonal(I,n)
 R = 0.01*Diagonal(I,m)
-
-goal = goal_constraint(xf);
-
-N = 70#plot(prob.U,xlabel="time step",title="Control Trajectory",label=["u1" "u2"])
-dt = 0.1
-tf = (N-1)*dt
-
-U = [ones(m) for k = 1:N-1]
-
 obj = LQRObjective(Q,R,Qf,xf,N)
 constraints = Constraints(N)
 
@@ -89,19 +67,16 @@ for k = 1:N-1
      constraints[k] += bnd
  end
 
-
+#Collision constraint
+#this function defines constraint penalty
 function My_constraint(x)
 	ϵ=0.35;
 	l=0.5;
 	X1=x[1]+l*sin(x[3]);
 	Y1=0.6+l*cos(x[3]);
 	X2=x[5]
-	#Y2=0.25;
 	Y2=0.2;
-
-
 	dist=max((X1-X2)^2 , (Y1-Y2)^2)
-
 	return -(dist - ϵ^2)
 end
 function My_obs(c,x,u)
@@ -110,18 +85,16 @@ function My_obs(c,x,u)
 	return nothing
 end
 
-
 obs= Constraint{Inequality}(My_obs,n,m,2,:obs)
-
 for k = 1:N-1
      constraints[k] += obs
  end
 
-
+# goal constraint
+goal = goal_constraint(xf);
 constraints[N] += goal
 
 prob = Problem(model_d,obj,constraints=constraints,x0=x0,N=N,dt=dt,xf=xf)
-#initial_controls!(prob, U);
 
 # options
 max_con_viol = 1.0e-9
@@ -156,32 +129,15 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
     end
 
 
-#=
-    io = open("/home/mehrdad/Scots+Altro/examples/Collision Test/cart_pole_ST.txt", "w")
-    for i in prob.X
-        print(io,i[1])
-        print(io," ")
-		print(io,i[2])
-        print(io," ")
-		print(io,i[3])
-        print(io," ")
-		print(io,i[4])
-        print(io," ")
-		print(io,i[5])
-        print(io," ")
-        println(io,i[6])
-    end
-    close(io)
-=#
-#=
-	io = open("/home/mehrdad/Scots+Altro2/examples/cart_pole_MA/cart_pole_new.txt", "w")
+	io = open("/home/mehrdad/Scots+Altro2/examples/cart_pole_MA/nom_tr.txt", "w")
 	for i in prob.U
 		print(io,i[1])
 		print(io," ")
 		println(io,i[2])
 	end
 	close(io)
-=#
+
+
 #=	io = open("/home/mehrdad/Scots+Altro/examples/unicycle1D/uni_trajectory5.txt", "w")
     for i in prob.U
         println(io,i[2])
@@ -219,66 +175,8 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 			println("error")
 		end
 	end
-#=
-	for i = 1:6*N
-		Xd1[i]=xd1[i]+l*sin(xd3[i]);
-		Yd1[i]=0.6+l*cos(xd3[i]);
-		Y3[i]=0.6;
-		Y2[i]=0.25;
-		Xc1[i]=xc1[i]+l*sin(xc3[i]);
-		Yc1[i]=0.6+l*cos(xc3[i]);
-	end
-	for i = 1:6*N
-		#if(sqrt((X1[i]-X2[i])^2 + (Y1[i]-Y2[i])^2)<0.1)
-			dist[i]=sqrt((Xc1[i]-Xc2[i])^2 + (Yc1[i]-Y2[i])^2)
-		if(dist[i]>0.4)
-			dist[i]=0.4
-		end
-
-		#else
-	#		dist[i]=0.1;
-	#	end
-	end
-=#
-
-	#print("min "); println( minimum(x));
-    #print("max ") ;println( maximum(b));
-
-
-    #c=plot()
 
 	c=plot(dist)
-#	d=plot(prob.X,xlabel="time step",title="State Trajectory",legend=:topleft)
-#	b=plot(prob.U,xlabel="time step",title="input Trajectory")
 
-#    plot_obstacles(circles,:orange)
-#	a=plot();
-#	plot!(X1,Y1,xlabel="x",ylabel="y",label="cart_pole",legend=:topleft,width=2,ratio=:equal,title="state trajectory")
-#	plot!(X2,Y2,xlabel="x",ylabel="y",label="unicycle",legend=:topleft,width=2,ratio=:equal,title="state trajectory")
-	#plot!(X2,Y2,xlabel="x",ylabel="y",label="unicycle",legend=:topleft,width=2,ratio=:equal,title="state trajectory")
-
-    #plot!((Xd[1],z[1]),marker=:circle,color=:red,label="start")
-    #plot!((x[end],z[end]),marker=:circle,color=:green,label="goal")
-
-#PP1=minimum(prob.U)
-#PP2=maximum(prob.U)
 
 rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
-
-
-	anim = @animate for i in 1:N
-plot((X1[i],Y1[i]),marker=:circle,label="pole position",xlim=(0,7),ylim=(0,7))
-plot!((X2[i],Y2[i]),marker=:circle,label="unicycle")
-
-plot!(rectangle(0.6,0.5,X2[i]-0.3,0), opacity=.5)
-
-
-plot!(x1[1:i],Y3[1:i],label="cart position")
-plot!([x1[i],X1[i]],[Y3[i],Y1[i]])
-
-	end
-
-#println(prob.U[:,1])
-#println(maximum(prob.U[:,2]))
-#println(minimum(prob.U))
-#println(minimum(prob.U[2,:]))
