@@ -1,6 +1,13 @@
-# RobScots
-
+# GGMove
 Temporary version of readme!!!
+
+
+
+We implement our method on top these two tools:
+1. Scots : https://gitlab.lrz.de/matthias/SCOTSv0.2
+2. ALTRO : https://github.com/RoboticExplorationLab/TrajectoryOptimization.jl
+
+we used ALTRO v0.1 which is uploaded in this repository.
 
 # Requirements
 * Julia >1.3
@@ -21,13 +28,25 @@ Temporary version of readme!!!
 
 ## steps for developement
 
-1. Modify ALTRO Planning:
+1. Modify ALTRO (Planner):
 * create *.jl file similar to examples
 * change your model in dynamics! function
 * select number of points and sampling time
 * enter the penalty functions 
 
-2. Modify Scots
+2. Modify Scots (Robustifier)
 * create a *.hh in dynamics similar to examples (you dont need to change cpp files)
 * enter time augmented dynamics ( one extra state variabe x_dot=1)
 * select all paramets in parameters class
+
+## directories structure
+
+### src
+This folder contains Scots library files. 
+### dynamics
+This folder contains Scots configurations (such as dynamics and parameters) for examples.
+### TrajectoryOptimization
+ALTRO Library files.
+### Examples
+Here there is a folder for each.  
+
