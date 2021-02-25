@@ -1,4 +1,6 @@
-# GGMove
+# GMARA
+Guaranteed Multi-Agent Reach Avoid
+
 Temporary version of readme!!!
 
 
