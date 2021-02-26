@@ -1,5 +1,5 @@
-# GMARA
-It stands for Guaranteed Multi-Agent Reach Avoid.
+# GAMARA
+It stands for GuAranteed Multi-Agent Reach Avoid.
 
 Temporary version of readme!!!
 
