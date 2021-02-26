@@ -21,14 +21,14 @@ using abs_type = scots::abs_type;
 class Parameters {
   public:
 
-    const char* address="/home/mehrdad/Final_Project/examples/multiDrone/tr_U.txt";
+    const char* address="nom_tr.txt";
 
     /* lower bounds of the hyper rectangle */
 state_type s_lb={{-1,-1,-2,-0.1}};
     /* upper bounds of the hyper rectangle */
 state_type s_ub={{11,11,3.3,11}};
     /* grid node distance diameter */
-state_type s_eta={{0.02,0.02,0.02,0.1}};
+state_type s_eta={{0.025,0.025,0.03,0.1}};
 
     /* lower bounds of the hyper rectangle */
 input_type i_lb={{-2.5,-2.5}};
@@ -47,7 +47,7 @@ state_type w={{0,-0.025,-0.025}};
     int trajectory_size=103;
     /* tube size is equal to number of boxes times */
 
-    state_type epsilon_num={7,7,8,0};
+    state_type epsilon_num={7,7,7,0};
 
     const int state_dim=4;
     const int input_dim=2;

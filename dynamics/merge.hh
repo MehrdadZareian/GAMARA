@@ -52,7 +52,7 @@ state_type w={{-0.03,-0.03,-0.03}};
     const int state_dim=4;
     const int input_dim=2;
 
-    const int trajectory_num=5;  //starts from 0
+    const int trajectory_num=3;  //starts from 0
     const int agent_num=6;
     std::vector<state_type> initial_trajectory_states{ {{6.0,1.2,0,0}}, //0
                                                        {{3.0,1.2,0,0}}, //1
