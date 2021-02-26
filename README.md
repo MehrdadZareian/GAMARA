@@ -1,7 +1,6 @@
 # GAMARA
 It stands for GuAranteed Multi-Agent Reach Avoid.
 
-Temporary version of readme!!!
 
 
 
@@ -17,7 +16,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 
 ## steps for execution
 1. Run Altro code 
-* Be careful julia directory be same as the example directory
+* Be careful to set julia directory same as the <example name> directory
 * nom_tr.txt will be generated which is nominal controller
 
 2. Run Makefile to compile project
