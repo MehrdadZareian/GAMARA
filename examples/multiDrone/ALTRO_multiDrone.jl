@@ -9,7 +9,7 @@ using Plots, LinearAlgebra
 agent_number=10
 
 #defining product system dynamics
-function unicycle!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
+function dynamics!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
 
 	for k=1:10
 		ẋ[3*k-2] = u[2*k-1]*cos(x[3*k]);

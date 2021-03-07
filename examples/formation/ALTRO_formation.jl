@@ -15,7 +15,7 @@ initial_pos=(0,0,pi/4);
 goal_pos=(15,15,pi/4);
 
 #defining product system dynamics
-function unicycle!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
+function dynamics!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
 	for k=1:agent_number
 		ẋ[3*k-2] = u[2*k-1]*cos(x[3*k]);
 		ẋ[3*k-1] = u[2*k-1]*sin(x[3*k]);
@@ -29,7 +29,7 @@ n=3*agent_number
 m=2*agent_number
 
 #defining descrete model
-model = Model(unicycle!,n,m)
+model = Model(dynamics!,n,m)
 model_d = rk4(model)
 n = model.n;
 m = model.m;

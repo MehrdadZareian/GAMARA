@@ -11,7 +11,7 @@ using Plots, LinearAlgebra
 agent_number=6;
 
 #defining product system dynamics
-function unicycle!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
+function dynamics!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
 	for k=1:agent_number
 		ẋ[3*k-2] = u[2*k-1]*cos(x[3*k]);
 		ẋ[3*k-1] = u[2*k-1]*sin(x[3*k]);
