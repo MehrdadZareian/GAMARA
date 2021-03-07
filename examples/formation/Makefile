@@ -11,7 +11,6 @@ CXXDEBUG		= -g -Wall -Wextra -std=c++11
 #
 SCOTSROOT		= ../..
 SCOTSINC		= -I$(SCOTSROOT)/src
-DYNINC		= -I$(SCOTSROOT)/dynamics
 
 .PHONY: Formation simulation 
 
@@ -20,8 +19,8 @@ TARGET = Formation simulation
 all: $(TARGET)
 
 Formation: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  formation.cpp -o formation 
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  formation.cpp -o formation 
 simulation:
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  simulation.cpp -o simulate
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  simulation.cpp -o simulate
 clean:
 	rm formation

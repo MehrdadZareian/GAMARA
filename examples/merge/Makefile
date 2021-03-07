@@ -11,7 +11,7 @@ CXXDEBUG		= -g -Wall -Wextra -std=c++11
 #
 SCOTSROOT		= ../..
 SCOTSINC		= -I$(SCOTSROOT)/src
-DYNINC		= -I$(SCOTSROOT)/dynamics
+
 
 .PHONY: Merge simulation 
 
@@ -20,8 +20,8 @@ TARGET = Merge simulation
 all: $(TARGET)
 
 Merge: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  merge.cpp -o merge 
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  merge.cpp -o merge 
 simulation:
-	$(CC) $(CXXFLAGS) $(SCOTSINC) $(DYNINC)  simulation.cpp -o simulate
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  simulation.cpp -o simulate
 clean:
 	rm merge

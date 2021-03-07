@@ -1,4 +1,7 @@
 
+import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
+#Write Altro folder instead of @__DIR__
+
 using TrajectoryOptimization
 using Plots, LinearAlgebra
 
