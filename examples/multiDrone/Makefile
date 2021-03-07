@@ -19,7 +19,7 @@ TARGET = MultiDrone simulation
 all: $(TARGET)
 
 MultiDrone: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC) multiDrone.cpp -o multiDrone 
+	$(CC) $(CXXFLAGS) $(SCOTSINC) multiDrone.cpp -o abs_syn 
 simulation:
 	$(CC) $(CXXFLAGS) $(SCOTSINC) simulation.cpp -o simulate
 clean:

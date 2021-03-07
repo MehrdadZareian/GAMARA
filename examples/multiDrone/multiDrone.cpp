@@ -44,9 +44,6 @@ bool check_inside(state_type left,state_type right, state_type point ){
 
 
 
-/* In this function we read control inputs from a file and simulate the trajectroy using inputs + ODE */
-
-
 
 
 int main(){
@@ -64,11 +61,6 @@ int main(){
 
 
     state_type initial_trajectory_state=parameters.initial_trajectory_states[parameters.trajectory_num];
-    //__________________________________________________________________________________________________
-
-
-    /*vector that contains all of states of nominal trajectory*/
-
 
     /* reading nominal controller from a file and simulating   */
     std::vector<state_type> nominal_trajectory_states=trajectory_simulation(parameters);

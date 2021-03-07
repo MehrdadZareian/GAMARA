@@ -44,12 +44,6 @@ bool check_inside(state_type left,state_type right, state_type point ){
 
 
 
-/* In this function we read control inputs from a file and simulate the trajectroy using inputs + ODE */
-
-
-
-
-
 int main(){
 
 
@@ -60,22 +54,9 @@ int main(){
     TicToc tt2;
     
 
-    /* setup the workspace of the synthesis problem and the uniform grid */
-    /* lower bounds of the hyper rectangle */
-
-
     state_type initial_trajectory_state=parameters.initial_trajectory_states[parameters.trajectory_num];
     //__________________________________________________________________________________________________
 
-    /*initial point for trajectory*/
-    //     initial_trajectory_state={{6.0,1.2,0,0}};//1
-    //    initial_trajectory_state={{3.0,1.2,0,0}};//2
-    //    initial_trajectory_state={{0.0,1.2,0,0}};//3
-    //   initial_trajectory_state={{8,3.9,-0.64,0}};//4
-    //    initial_trajectory_state={{6,5.4,-0.64,0}};//5
-    //    initial_trajectory_state={{4.0,6.9,-0.64,0}};//6
-
-    /*vector that contains all of states of nominal trajectory*/
 
 
     /* reading nominal controller from a file and simulating   */

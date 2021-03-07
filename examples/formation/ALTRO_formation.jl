@@ -96,6 +96,7 @@ for k = 1:N-1
 
 #constraint for obstacles
 #obstacles parameters (Xposition,Yposition,Radius)
+# radius(obstacle size) is 2*epsilon+ delta
 obstacles=((7,11.5,2.9),(7,3.5,2.9))
 
 #=

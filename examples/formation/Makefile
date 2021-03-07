@@ -19,7 +19,7 @@ TARGET = Formation simulation
 all: $(TARGET)
 
 Formation: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC)  formation.cpp -o formation 
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  formation.cpp -o abs_syn 
 simulation:
 	$(CC) $(CXXFLAGS) $(SCOTSINC)  simulation.cpp -o simulate
 clean:

@@ -20,7 +20,7 @@ TARGET = Merge simulation
 all: $(TARGET)
 
 Merge: 
-	$(CC) $(CXXFLAGS) $(SCOTSINC)  merge.cpp -o merge 
+	$(CC) $(CXXFLAGS) $(SCOTSINC)  merge.cpp -o abs_syn 
 simulation:
 	$(CC) $(CXXFLAGS) $(SCOTSINC)  simulation.cpp -o simulate
 clean:
