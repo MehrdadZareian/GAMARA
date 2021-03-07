@@ -36,7 +36,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 * enter the penalty functions 
 
 2. Modify Scots (Robustifier)
-* create a *.hh in dynamics similar to examples (you dont need to change cpp files)
+* create a *.hh similar to examples (you dont need to change cpp files)
 * enter time augmented dynamics ( one extra state variabe x_dot=1)
 * select all paramets in parameters class
 
@@ -44,10 +44,8 @@ we used ALTRO v0.1 which is uploaded in this repository.
 
 ### src
 This folder contains Scots library files. 
-### dynamics
-This folder contains Scots configurations (such as dynamics and parameters) for examples.
 ### TrajectoryOptimization
 ALTRO Library files.
 ### Examples
-Here there is a folder for each.  
+Here there is a folder for each example which includes a Julia file for Altro and also example codes for ABCD.  
 
