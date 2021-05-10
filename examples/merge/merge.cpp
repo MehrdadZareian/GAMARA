@@ -68,6 +68,7 @@ int main(){
     state_type target_right;
 
     /*specifying target set with lower left and upper right point (last point of trajectory +- radius */
+    /* last dimention is time which has radius zero (for sake of implementation we considered a small value)*/
     for (int i = 0; i < state_dim; ++i) {
         double target_radius;
         if(i!=state_dim-1)
