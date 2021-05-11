@@ -22,6 +22,9 @@
 
 #define pi 3.14
 
+/*Here we test the synthesized controller with forward simulation*/
+
+/*this function checks whether a points is inside a box represented by upper right and lower left point*/
 bool check_inside(state_type left,state_type right, state_type point ){
     for (int i = 0; i < state_dim; ++i) {
         if(point[i] < left[i] || point[i] > right[i])
@@ -33,9 +36,9 @@ bool check_inside(state_type left,state_type right, state_type point ){
 
 
 int main(){
+    /*loading configuration to variables*/
     state_type initial_trajectory_state=parameters.initial_trajectory_states[parameters.trajectory_num];
     std::vector<state_type> nominal_trajectory_states=trajectory_simulation(parameters);
-
     int trajectory_size=parameters.trajectory_size;
 
     /*Target set lower left and upper right*/
@@ -70,7 +73,9 @@ int main(){
     std::vector<abs_type>  LtoG;
     scots::Abstraction<state_type,input_type,Parameters> abs(ss,is);
 
-    abs.map_initialization(nominal_trajectory_states,ss,parameters,target_left,target_right,inside_of_area,LtoG,GtoL);
+    /*This function iterates through all of points inside of the tube and store the indexes of them for building map between global index and local index(inside tube) */
+    abs.map_index_calculation(nominal_trajectory_states,ss,parameters,target_left,target_right,inside_of_area,LtoG,GtoL);
+
 
     scots::StaticController con;
     if(!read_from_file(con,"controller")) {

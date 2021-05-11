@@ -29,9 +29,9 @@
 #define obstacle_size 1
 struct rusage usage;
 
+/*This file is responsible for Abstraction and control synthesis for a specific example*/
 
-
-
+/*this function checks whether a points is inside a box represented by upper right and lower left point*/
 bool check_inside(state_type left,state_type right, state_type point ){
     for (int i = 0; i < state_dim; ++i) {
         if(point[i] < left[i] || point[i] > right[i])
@@ -110,8 +110,8 @@ int main(){
 
     //tt2.tic();
 
-    /*This function iterates through all of points inside of the tube and store the indexes of them for building map between global index and local index */
-    abs.map_initialization(nominal_trajectory_states,ss,parameters,target_left,target_right,inside_of_area,LtoG,GtoL);
+    /*This function iterates through all of points inside of the tube and store the indexes of them for building map between global index and local index(inside tube) */
+    abs.map_index_calculation(nominal_trajectory_states,ss,parameters,target_left,target_right,inside_of_area,LtoG,GtoL);
     //tt2.toc();
 
 
@@ -121,7 +121,7 @@ int main(){
 
     /* Computing abstraction */
     tt.tic();
-    abs.compute_gb2_temp(tf,ode_post, radius_post,inside_of_area,LtoG,GtoL);
+    abs.compute_gb_local(tf,ode_post, radius_post,inside_of_area,LtoG,GtoL);
     tt.toc();
 
 

@@ -22,6 +22,10 @@
 
 #define pi 3.14
 
+/*Here we test the synthesized controller with forward simulation*/
+
+
+/*this function checks whether a points is inside a box represented by upper right and lower left point*/
 bool check_inside(state_type left,state_type right, state_type point ){
     for (int i = 0; i < state_dim; ++i) {
         if(point[i] < left[i] || point[i] > right[i])
