@@ -228,7 +228,7 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 	    println(io,i[m])
 	end
 	close(io)
-
+println("Trajectory is written in nom_tr.txt");
 
 
 

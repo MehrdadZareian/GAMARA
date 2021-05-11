@@ -1,5 +1,5 @@
 
-import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
+#import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
 #Write Altro folder instead of @__DIR__
 
 using TrajectoryOptimization
@@ -24,7 +24,7 @@ n=agent_number*3
 m=agent_number*2
 
 #defining descrete model
-model = Model(unicycle!,n,m)
+model = Model(dynamics!,n,m)
 model_d = rk4(model)
 n = model.n;
 m = model.m;
