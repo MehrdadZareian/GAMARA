@@ -13,7 +13,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 # Requirements
 1. Julia >1.3
 * Install "Plots" library before execution.
-3. c++ 11
+2. c++ 11
 
 ## steps for execution
 1. Run Altro code 
