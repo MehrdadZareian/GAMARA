@@ -1,5 +1,5 @@
 
-#import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
+import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
 #Write Altro folder instead of @__DIR__
 
 using TrajectoryOptimization
@@ -279,7 +279,7 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 
 
 	anim = @animate for i in 1:N
-		plot((x[1][i],z[1][i]),marker=:circle,xlim=(0,20),ylim=(0,20))
+		plot((x[1][i],z[1][i]),marker=:circle,xlim=(0,15),ylim=(0,15))
 		plot!((x[2][i],z[2][i]),marker=:circle)
 		plot!((x[3][i],z[3][i]),marker=:circle)
 		plot!((x[4][i],z[4][i]),marker=:circle)
