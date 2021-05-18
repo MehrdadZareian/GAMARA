@@ -4,9 +4,9 @@
 #define pi 3.14
 
 /* state space dim */
-const int state_dim=4;
+const int state_dim=5;
 /* input space dim */
-const int input_dim=2;
+const int input_dim=1;
 /*
  * data types for the state space elements and input space
  * elements used in uniform grid and ode solvers
@@ -24,46 +24,41 @@ class Parameters {
     const char* address="nom_tr.txt";
 
     /* lower bounds of the hyper rectangle */
-state_type s_lb={{-1,-1,-2,-0.1}};
+state_type s_lb={{-0.2,-2,1.2,-5.5,-0.1}};
     /* upper bounds of the hyper rectangle */
-state_type s_ub={{11,11,3.3,11}};
+state_type s_ub={{5.5,4.4,4.7,5.3,7}};
     /* grid node distance diameter */
-state_type s_eta={{0.025,0.025,0.03,0.1}};
+state_type s_eta={{0.015,0.035,0.016,0.064,0.1}};
 
     /* lower bounds of the hyper rectangle */
-input_type i_lb={{-2.5,-2.5}};
+input_type i_lb={-7};
     /* upper bounds of the hyper rectangle */
-input_type i_ub={{2.5,2.5}};
+input_type i_ub={7};
     /* grid node distance diameter */
-input_type i_eta={{0.3,0.3}};
+input_type i_eta={{0.2}};
 
     /*Disturbance vector(for each state)*/
-state_type w={{0,-0.025,-0.025}};
+state_type w={{0,0.05,0,0,0}};
+
+/*Growth bond matrix */
+double L_first[71][16];
+double L_second[71][16];
 
     /*sampling time*/
     const double tau =0.1;
 
     /*number of samples in nominal trajectory (trajectory is discrete time)*/
-    int trajectory_size=103;
+    int trajectory_size=70;
     /* tube size is equal to number of boxes times */
+    state_type epsilon_num={8,10,10,11,0};
 
-    state_type epsilon_num={7,7,7,0};
-
-    const int state_dim=4;
-    const int input_dim=2;
-    const int trajectory_num=9; //Caution : starts from zero
-    const int agent_num=10;
-    std::vector<state_type> initial_trajectory_states{ {{0.0,2.0,0,0}}, //1
-                                                       {{0.0,4.0,0,0}}, //2
-                                                       {{0.0,6.0,0,0}}, //3
-                                                       {{0.0,8.0,0,0}}, //4
-                                                       {{2.0,0.0,pi/2,0}}, //5
-                                                       {{4.0,0.0,pi/2,0}}, //6
-                                                       {{6.0,0.0,pi/2,0}}, //7
-                                                       {{8.0,0.0,pi/2,0}}, //8
-                                                       {{0.0,0.0,pi/4,0}}, //9
-                                                       {{0.0,10.0,-pi/4,0}} //10
+    const int state_dim=5;
+    const int input_dim=1;
+    const int trajectory_num=0; //Caution : starts from zero
+    const int agent_num=2;
+    std::vector<state_type> initial_trajectory_states{ {{0,0,pi,0,0}}
                                                      };
+
 
 } parameters;
 
@@ -73,13 +68,21 @@ state_type w={{0,-0.025,-0.025}};
 
 /* we integrate the growth bound by tau sec (the result is stored in r)  */
 inline auto radius_post = [](state_type &r, const state_type &, const input_type &u) {
-    //without disturbance
-    static state_type w=parameters.w;
-    static double tau=parameters.tau;
-    r[0] = r[0] + ((r[2]+std::abs(w[2]))*std::abs(u[0]) + std::abs(w[0])) * tau;
-    r[1] = r[1] + ((r[2]+std::abs(w[2]))*std::abs(u[0]) + std::abs(w[1])) * tau;
-    r[2] = r[2] + std::abs(w[2]) * tau;
-    r[3]=0;
+   state_type r_temp;
+   static state_type w=parameters.w;
+    for (int i=0;i<4;i++)
+        r_temp[i]=0;
+
+    int index=(u[0]+7)/0.2;
+    for (int i=0;i<4;i++)
+        for(int j=0;j<4;j++){
+            r_temp[i]+= r[j]*parameters.L_first[index][4*j+i] + w[j]*parameters.L_second[index][4*j+i];
+        }
+
+    for (int i=0;i<4;i++)
+        r[i]=r_temp[i];
+
+    r[4]=0;
 };
 
 
@@ -95,14 +98,29 @@ inline auto  ode_post = [](state_type &x, const input_type &u) {
 
     auto rhs =[](state_type& xx,  const state_type &x, const input_type &u) { // state space model
 
-        xx[0] = u[0]*std::cos(x[2]);
-        xx[1] = u[0]*std::sin(x[2]);
-        xx[2] = u[1];
-        xx[3] = 1;
+
+        double g = 9.8;
+        double M_c=1.0;
+        double M_p=0.1;
+        double M_t=M_p+M_c;
+        double l=0.5;
+        double c1 = u[0]/M_t;
+        double c2 = M_p*l/M_t;
+        double c3=l*4.0/3.0;
+        double c4=l*M_p/M_t;
+
+        double F=(g*std::sin(x[2])-std::cos(x[2])*(c1+c2*x[3]*x[3]*std::sin(x[2])))/(c3-c4*std::cos(x[2])*std::cos(x[2]));
+        double G= (c1+c2*x[3]*x[3]*std::sin(x[2])) - c4* std::cos(x[2])*F;
+
+        xx[0] =x[1];
+        xx[1] =G;
+        xx[2] =x[3];
+        xx[3] =F;
+        xx[4]=1;
+
 
     };
-    /* simulate (use 10 intermediate steps in the ode solver) */
-    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,10);
+    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,1);
 
 };
 
@@ -110,16 +128,32 @@ inline auto  ode_post = [](state_type &x, const input_type &u) {
 auto  ode_post_dist = [](state_type &x, const input_type &u) {
     /* the ode describing the vehicle */
     double tau=parameters.tau;
+    static state_type w=parameters.w;
     auto rhs =[](state_type& xx,  const state_type &x, const input_type &u) { // state space model
-        state_type w=parameters.w;
-        xx[0] = u[0]*std::cos(x[2])+w[0];
-        xx[1] = u[0]*std::sin(x[2])+w[1];
-        xx[2] = u[1]+w[2];
-        xx[3] = 1;
+
+
+        double g = 9.8;
+        double M_c=1.0;
+        double M_p=0.1;
+        double M_t=M_p+M_c;
+        double l=0.5;
+        double c1 = u[0]/M_t;
+        double c2 = M_p*l/M_t;
+        double c3=l*4.0/3.0;
+        double c4=l*M_p/M_t;
+
+        double F=(g*std::sin(x[2])-std::cos(x[2])*(c1+c2*x[3]*x[3]*std::sin(x[2])))/(c3-c4*std::cos(x[2])*std::cos(x[2]));
+        double G= (c1+c2*x[3]*x[3]*std::sin(x[2])) - c4* std::cos(x[2])*F;
+
+        xx[0] =x[1]+w[0];
+        xx[1] =G+w[1];
+        xx[2] =x[3]+w[2];
+        xx[3] =F+w[3];
+        xx[4]=1;
 
     };
-    /* simulate (use 10 intermediate steps in the ode solver) */
-    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,10);
+    scots::runge_kutta_fixed4(rhs,x,u,state_dim,tau,1);
+
 };
 
 std::vector<state_type> trajectory_simulation(Parameters& parameters){
@@ -143,6 +177,19 @@ std::vector<state_type> trajectory_simulation(Parameters& parameters){
       inputs[i]=u_temp[tr_num];
     }
 
+    std::ifstream inFile2;
+    inFile2.open("GB.txt");
+
+    for (int i =0 ; i<142;i++){
+        for(int j=0;j<16;j++){
+            if(i%2==0){
+                inFile2 >> parameters.L_first[i/2][j];
+            }
+            else
+                inFile2 >> parameters.L_second[i/2][j];
+
+        }
+    }
     state_type temp_state;
     nominal_trajectory_states.push_back(initial_trajectory_state);
     temp_state=initial_trajectory_state;
