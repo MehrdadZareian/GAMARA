@@ -1,5 +1,5 @@
 
-import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
+#import Pkg; Pkg.activate(@__DIR__); Pkg.instantiate();
 #Write Altro folder instead of @__DIR__
 using TrajectoryOptimization
 using Plots, LinearAlgebra
@@ -11,22 +11,38 @@ agent_number=10
 #defining product system dynamics
 function dynamics!(ẋ::AbstractVector{T},x::AbstractVector{T},u::AbstractVector{T}) where T
 
-	for k=1:10
-		ẋ[3*k-2] = u[2*k-1]*cos(x[3*k]);
-		ẋ[3*k-1] = u[2*k-1]*sin(x[3*k]);
-	    ẋ[3*k] = u[2*k];
-	end
+	g = 9.8;
+	M_c=1.0;
+	M_p=0.1;
+	M_t=M_p+M_c;
+	l=0.5;
+	c1 = u[1]/M_t;
+	c2 = M_p*l/M_t;
+
+	c3=l*4/3;
+	c4=l*M_p/M_t;
+
+	F=(g*sin(x[3])-cos(x[3])*(c1+c2*x[4]*x[4]*sin(x[3])))/(c3-c4*cos(x[3])*cos(x[3]));
+	G= (c1+c2*x[4]*x[4]*sin(x[3])) - c4* cos(x[3])*F;
+
+	ẋ[1] = x[2];
+	ẋ[2] = G;
+	ẋ[3]= x[4];
+	ẋ[4] = F;
+
+	ẋ[5]=x[6];
+	ẋ[6]=u[2];
 end
 
 
 #Total number of states
-n=3*agent_number
+n=6
 #Total number of control inputs
-m=2*agent_number
+m=2
 
 
 #defining descrete model
-model = Model(unicycle!,n,m)
+model = Model(dynamics!,n,m)
 model_d = rk4(model)
 n = model.n;
 m = model.m;
@@ -36,33 +52,15 @@ T = Float64;
 
 
 #inital point for product system
-x0 = [0.0;2.0;0.0;
-0.0;4.0;0.0;
-0.0;6.0;0.0;
-0.0;8.0;0.0;
-2.0;0.0;pi/2;
-4.0;0.0;pi/2;
-6.0;0.0;pi/2;
-8.0;0.0;pi/2;
-0.0;0.0;pi/4;
-0.0;10.0;-pi/4]
+x0 = [0.0;0.0;pi;0.0;8.0;0.0]
 
 #goal point for product system
-xf = [10.0;2.0;0.0;
-10.0;4.0;0.0;
-10.0;6.0;0.0;
-10.0;8.0;0.0;
-2.0;10.0;pi/2;
-4.0;10.0;pi/2;
-6.0;10.0;pi/2;
-8.0;10.0;pi/2;
-10.0;10.0;pi/4;
-10.0;0.0;-pi/4]
+xf = [5.0;0.0;pi;0.0;4.0;0.0]
 
 
 
 #number of points in trajectory(number of time samples)
-N = 104
+N = 70
 #sampling time
 dt = 0.1
 #total time
@@ -77,48 +75,31 @@ obj = LQRObjective(Q,R,Qf,xf,N)
 
 #creating upperbound and lower bound for control input with bound constraint
 constraints = Constraints(N)
-u_min = Array{Float64}(undef,2*agent_number)
-u_max = Array{Float64}(undef,2*agent_number)
-u_c=2;
-for k=1:2*agent_number
-	u_min[k]=-u_c;
-	u_max[k]=u_c;
-end
+u_min=[-6.0,-5.0]
+u_max=[6.0,5.0]
 bnd = BoundConstraint(n,m,u_min=u_min,u_max=u_max)
 for k = 1:N-1
      constraints[k] += bnd
  end
 
 
- #constraint for obstacle
- #this function is defining penalty for collision constraint
-function My_rectangle(x)
-	M=10000
-	ϵ=1.46
-		for i=1:10
-        	temp=max((x[3*i-2]-5)^2,(x[3*i-1]-5)^2)
-			M=min(temp,M)
-    	end
-    return -(M-ϵ^2);
-end
 
-#constraint for obstacle
-#this function is defining penalty for collision constraint
+#constraint for Collision
+#this function is defining penalty value for collision constraint
 function My_constraint(x)
-	ϵ=0.64
-	M=1000;
-	for i=1:9 #agent number -1
-		for j=i+1:10  #agent number
-		temp=max((x[3*i-2]-x[3*j-2])^2 , (x[3*i-1]-x[3*j-1])^2);
-		M=min(temp,M);
-		end
-	end
-	return -(M - ϵ^2)
+	ϵ=0.35;
+	l=0.5;
+	X1=x[1]+l*sin(x[3]);
+	Y1=0.6+l*cos(x[3]);
+	X2=x[5]
+	Y2=0.2;
+	dist=max((X1-X2)^2 , (Y1-Y2)^2)
+	return -(dist - ϵ^2)
 end
 
 function My_obs(c,x,u)
     c[1]=My_constraint(x);
-    c[2]=My_rectangle(x);
+    c[2]=-1
 	return nothing
 end
 
@@ -165,73 +146,57 @@ opts_altro = ALTROSolverOptions{T}(verbose=verbose,
 
 	#here we call the solver to solve
     @time begin
-    a=solve!(prob, opts_altro); # solve with ALTRO
+    	solve!(prob, opts_altro); # solve with ALTRO
     end
 
+	x1 = [prob.X[k][1] for k = 1:N]
+	x2 = [prob.X[k][2] for k = 1:N]
+	x3 = [prob.X[k][3] for k = 1:N]
+	x4 = [prob.X[k][4] for k = 1:N]
+	x5 = [prob.X[k][5] for k = 1:N]
+	x6 = [prob.X[k][6] for k = 1:N]
 
-#parsing the solution to differenet arrays
 
-	x=Array{Array{Float64,1}}(undef,agent_number)
-	z=Array{Array{Float64,1}}(undef,agent_number)
-	for i=1:agent_number
-    	x[i] = [prob.X[k][3*i-2] for k = 1:N]
-    	z[i] = [prob.X[k][3*i-1] for k = 1:N]
+
+	X1=Array{Float64,1}(undef,N)
+	X2=x5
+	Y1=Array{Float64,1}(undef,N)
+	Y2=Array{Float64,1}(undef,N)
+	Y3=Array{Float64,1}(undef,N)
+	l=0.5
+	for i = 1:N
+		X1[i]=x1[i]+l*sin(x3[i]);
+		Y1[i]=0.6+l*cos(x3[i]);
+
+		Y2[i]=0.2;
+		Y3[i]=0.6;
+
 	end
-#plotting
-	a=plot()
-
-	rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
-	plot!(rectangle(2,2,4,4), opacity=.5)
-	plot!(rectangle(2.8,2.8,3.6,3.6), opacity=.3)
-
-	plot!(x[1],z[1],xlabel="x",ylabel="y",label="1",legend=:topleft,color=:blue,width=2,ratio=:equal,title="Multi-Agent Example Trajectories")
-	plot!(x[2],z[2],xlabel="x",ylabel="y",label="2",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[3],z[3],xlabel="x",ylabel="y",label="3",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[4],z[4],xlabel="x",ylabel="y",label="4",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[5],z[5],xlabel="x",ylabel="y",label="5",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[6],z[6],xlabel="x",ylabel="y",label="6",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[7],z[7],xlabel="x",ylabel="y",label="7",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[8],z[8],xlabel="x",ylabel="y",label="8",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[9],z[9],xlabel="x",ylabel="y",label="9",legend=:topleft,width=2,ratio=:equal)
-	plot!(x[10],z[10],xlabel="x",ylabel="y",label="10",legend=:topleft,width=2,ratio=:equal)
 
 
-	plot!((x[1][1],z[1][1]),marker=:circle,color=:red,label="")
-    plot!((x[1][end],z[1][end]),marker=:utriangle,color=:green,label="")
 
-	plot!((x[2][1],z[2][1]),marker=:circle,color=:red,label="")
-    plot!((x[2][end],z[2][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[3][1],z[3][1]),marker=:circle,color=:red,label="")
-    plot!((x[3][end],z[3][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[4][1],z[4][1]),marker=:circle,color=:red,label="")
-    plot!((x[4][end],z[4][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[5][1],z[5][1]),marker=:circle,color=:red,label="")
-    plot!((x[5][end],z[5][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[6][1],z[6][1]),marker=:circle,color=:red,label="")
-    plot!((x[6][end],z[6][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[7][1],z[7][1]),marker=:circle,color=:red,label="")
-    plot!((x[7][end],z[7][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[8][1],z[8][1]),marker=:circle,color=:red,label="")
-    plot!((x[8][end],z[8][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[9][1],z[9][1]),marker=:circle,color=:red,label="")
-    plot!((x[9][end],z[9][end]),marker=:utriangle,color=:green,label="")
-
-	plot!((x[10][1],z[10][1]),marker=:circle,color=:red,label="")
-    plot!((x[10][end],z[10][end]),marker=:utriangle,color=:green,label="")
-
-	io = open("nom_tr.txt", "w")
-	for i in prob.U
-		for k=1:m-1
-    		print(io,i[k])
-    		print(io," ")
+		io = open("nom_tr.txt", "w")
+		for i in prob.U
+			print(io,i[1])
+			print(io," ")
+			println(io,i[2])
 		end
-    	println(io,i[m])
+		close(io)
+println("Trajectory is written in nom_tr.txt");
+
+
+rectangle(w, h, x, y) = Shape(x .+ [0,w,w,0], y .+ [0,0,h,h])
+
+
+	anim = @animate for i in 1:N
+plot((X1[i],Y1[i]),marker=:circle,label="pole position",xlim=(0,7),ylim=(0,7),markersize=5)
+
+plot!((X2[i],Y2[i]),marker=:circle,label="unicycle")
+
+plot!(rectangle(0.54,0.45,X2[i]-0.27,0), opacity=.5)
+
+
+plot!((x1[i],Y3[i]+0.1),marker=:rect,label="cart position",markersize=8)
+plot!([x1[i],X1[i]],[Y3[i],Y1[i]],lw=2,color=:black)
+
 	end
-	close(io)
