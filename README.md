@@ -17,14 +17,14 @@ we used ALTRO v0.1 which is uploaded in this repository.
 
 ## steps for execution
 1. Run Altro code 
-* Be careful to set julia directory same as the <example name> directory
+* Be careful to set julia working directory same as the <example name> directory
 * nom_tr.txt will be generated which is nominal controller
 
 2. Run Makefile to compile project
 * there will be two execution files
 3. run abs_syn to do abstraction and synthesis
 * if you faced segmentation fault or std::bad_alloc() it means there is not enough ram
-4. run simulation to test the synthesized controller against model with disturbance
+4. run simulation to test the synthesized controller to see the performance of controller with perturbed model
 
 
 
