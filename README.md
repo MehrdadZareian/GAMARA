@@ -15,7 +15,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 * Install "Plots" library before execution.
 2. c++ 11
 
-## steps for execution
+## Steps for execution
 1. Run Altro code 
 * Be careful to set julia working directory same as the <example name> directory
 * nom_tr.txt will be generated which is nominal controller
@@ -28,7 +28,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 
 
 
-## steps for developement
+## Steps for developement
 
 1. Modify ALTRO (Planner):
 * create *.jl file similar to examples
@@ -41,7 +41,7 @@ we used ALTRO v0.1 which is uploaded in this repository.
 * enter time augmented dynamics ( one extra state variabe x_dot=1)
 * select all paramets in parameters class
 
-## directories structure
+## Directories structure
 
 ### src
 This folder contains Scots library files. 
