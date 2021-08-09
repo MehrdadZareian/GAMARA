@@ -26,7 +26,7 @@ m=2*agent_number
 
 
 #defining descrete model
-model = Model(unicycle!,n,m)
+model = Model(dynamics!,n,m)
 model_d = rk4(model)
 n = model.n;
 m = model.m;
